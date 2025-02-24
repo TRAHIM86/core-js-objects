@@ -17,8 +17,9 @@
  *    shallowCopy({a: 2, b: { a: [1, 2, 3]}}) => {a: 2, b: { a: [1, 2, 3]}}
  *    shallowCopy({}) => {}
  */
-function shallowCopy(/* obj */) {
-  throw new Error('Not implemented');
+function shallowCopy(obj) {
+  const copyObj = {};
+  return Object.assign(copyObj, obj);
 }
 
 /**
@@ -32,8 +33,17 @@ function shallowCopy(/* obj */) {
  *    mergeObjects([{a: 1, b: 2}, {b: 3, c: 5}]) => {a: 1, b: 5, c: 5}
  *    mergeObjects([]) => {}
  */
-function mergeObjects(/* objects */) {
-  throw new Error('Not implemented');
+function mergeObjects(objects) {
+  // редьюс (акк, обж) => получаем ключи. Для каждого
+  // кей => акк[кей] = акк[кей] + обж[кей]. Т.о. суммируются
+  // все ключи. Инитиал для редьюса - пустой {}.
+
+  return objects.reduce((acc, obj) => {
+    Object.keys(obj).forEach((key) => {
+      acc[key] = (acc[key] || 0) + obj[key];
+    });
+    return acc;
+  }, {});
 }
 
 /**
@@ -49,8 +59,19 @@ function mergeObjects(/* objects */) {
  *    removeProperties({name: 'John', age: 30, city: 'New York'}, ['age']) => {name: 'John', city: 'New York'}
  *
  */
-function removeProperties(/* obj, keys */) {
-  throw new Error('Not implemented');
+function removeProperties(obj, keys) {
+  // делаем копию объекта, т.к. нельзя резать основной объект
+  const copyObj = {};
+  Object.assign(copyObj, obj);
+
+  // для каждого удаляемого ключа, если такой ключ есть
+  // в копи-объекте, то удалить ключ.
+  keys.forEach((key) => {
+    if (key in obj) {
+      delete copyObj[key];
+    }
+  });
+  return copyObj;
 }
 
 /**
@@ -65,8 +86,14 @@ function removeProperties(/* obj, keys */) {
  *    compareObjects({a: 1, b: 2}, {a: 1, b: 2}) => true
  *    compareObjects({a: 1, b: 2}, {a: 1, b: 3}) => false
  */
-function compareObjects(/* obj1, obj2 */) {
-  throw new Error('Not implemented');
+
+// самый простой вариант. Объекты никогда не равны друг другу
+// но можно их привести к json и сравнить. Не сработает если
+// св-ва одинаковы, но в другом порядке!!!
+function compareObjects(obj1, obj2) {
+  const json1 = JSON.stringify(obj1);
+  const json2 = JSON.stringify(obj2);
+  return json1 === json2;
 }
 
 /**
@@ -80,8 +107,11 @@ function compareObjects(/* obj1, obj2 */) {
  *    isEmptyObject({}) => true
  *    isEmptyObject({a: 1}) => false
  */
-function isEmptyObject(/* obj */) {
-  throw new Error('Not implemented');
+
+//получить ключи, проверить длина = 0
+function isEmptyObject(obj) {
+  const keys = Object.keys(obj);
+  return keys.length === 0;
 }
 
 /**
