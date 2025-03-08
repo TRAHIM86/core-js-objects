@@ -34,16 +34,19 @@ function shallowCopy(obj) {
  *    mergeObjects([]) => {}
  */
 function mergeObjects(objects) {
-  // редьюс (акк, обж) => получаем ключи. Для каждого
-  // кей => акк[кей] = акк[кей] + обж[кей]. Т.о. суммируются
-  // все ключи. Инитиал для редьюса - пустой {}.
+  const newObj = {};
 
-  return objects.reduce((acc, obj) => {
-    Object.keys(obj).forEach((key) => {
-      acc[key] = (acc[key] || 0) + obj[key];
+  objects.forEach((obj) => {
+    Object.entries(obj).forEach(([key, val]) => {
+      if (!newObj[key]) {
+        newObj[key] = 0 + val;
+      } else {
+        newObj[key] += val;
+      }
     });
-    return acc;
-  }, {});
+  });
+
+  return newObj;
 }
 
 /**
@@ -232,8 +235,15 @@ function getJSON(obj) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  // create new obj wits __proto__ = param:proto
+  const newObj = { __proto__: proto };
+
+  // parse jsos => obj
+  const parse = JSON.parse(json);
+
+  // copy parse.prop => to newObj.prop
+  return Object.assign(newObj, parse);
 }
 
 /**
